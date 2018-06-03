@@ -108,7 +108,10 @@ def render_list():
 
   for file in os.listdir(os.curdir + os.sep + 'uploads')[::-1]:
     if file not in result_map:
-      with open(os.curdir + os.sep + 'results' + os.sep + file + '.txt', 'r') as f:
+      result_file = os.curdir + os.sep + 'results' + os.sep + file + '.txt'
+      if not os.path.exists(result_file):
+        continue
+      with open(result_file, 'r') as f:
         img_result = {}
         for line in f:
           tokens = line.strip().split(',')
