@@ -3,10 +3,9 @@ import os
 import cgi
 import hashlib
 from model import Model
-from PIL import Image
 import numpy as np
-import io
 import result
+import cv2
 
 mlp = Model('mlp')
 shallow = Model('shallow')
@@ -88,31 +87,32 @@ class MyHandler(BaseHTTPRequestHandler):
 
 
   def _save_image(self, image_content, image_path):
-    img = Image.open(io.BytesIO(image_content))
+    img = np.fromstring(image_content, np.uint8)
+    img = cv2.imdecode(img, cv2.IMREAD_COLOR)  # cv2.IMREAD_COLOR in OpenCV 3.1
     img = self._center_crop(img)
 
-    save_img = img.resize((256, 256), Image.ANTIALIAS)
-    save_img.save(image_path)
+    save_img = cv2.resize(img, (256, 256))
+    cv2.imwrite(image_path, save_img)
 
-    img = img.resize((48, 48), Image.ANTIALIAS)
-    img = img.convert('L')  # convert image to grayscale
+    img = cv2.resize(img, (48, 48))
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
     img = np.asarray(img) / 255.0 - 0.5
     return img.reshape(1, 48, 48, 1)
 
   def _center_crop(self, img):
-    width, height = img.size
+    height, width, channels = img.shape
     new_width = new_height = min(width, height)
-    left = (width - new_width) / 2
-    top = (height - new_height) / 2
-    right = (width + new_width) / 2
-    bottom = (height + new_height) / 2
-    return img.crop((left, top, right, bottom))
-
+    left = int((width - new_width) / 2)
+    top = int((height - new_height) / 2)
+    right = int((width + new_width) / 2)
+    bottom = int((height + new_height) / 2)
+    return img[top:bottom, left:right]
 
 
 
 def run():
-  server_address = ('127.0.0.1', 8429)
+  server_address = ('', 8429)
   httpd = HTTPServer(server_address, MyHandler)
   print('http server is running...')
   httpd.serve_forever()
