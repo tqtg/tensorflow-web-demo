@@ -112,6 +112,11 @@ class MyHandler(BaseHTTPRequestHandler):
 
 
 def run():
+  if not os.path.exists('uploads'):
+    os.makedirs('uploads')
+  if not os.path.exists('results'):
+    os.makedirs('results')
+
   server_address = ('', 8429)
   httpd = HTTPServer(server_address, MyHandler)
   print('http server is running...')
