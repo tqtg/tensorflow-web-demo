@@ -70,10 +70,10 @@ tail = """
 """
 
 
-def render_single(image_path, mlp_pred, mlp_prob, shallow_pred, shallow_prob, deep_pred, deep_prob):
+def render_upload(image_path, mlp_pred, mlp_prob, shallow_pred, shallow_prob, deep_pred, deep_prob):
   content = """
   
-        <table style="width:50%">
+        <table style="width:70%">
           <tr>
             <th><img class="media-object" width="256" height="256" src="{}"></th>
             <th>
@@ -106,7 +106,11 @@ def render_list():
 
   content = """<table style="width:50%">"""
 
-  for file in os.listdir(os.curdir + os.sep + 'uploads')[::-1]:
+  upload_dir = os.curdir + os.sep + 'uploads'
+  files = os.listdir(upload_dir)
+  files.sort(key=lambda x: os.path.getmtime(upload_dir + os.sep + x))
+
+  for file in files[::-1]:
     if file not in result_map:
       result_file = os.curdir + os.sep + 'results' + os.sep + file + '.txt'
       if not os.path.exists(result_file):
@@ -120,7 +124,7 @@ def render_list():
           img_result[tokens[0]]['prob'] = tokens[2]
         result_map[file] = img_result
 
-    image_path = os.curdir + os.sep + 'uploads' + os.sep + file
+    image_path = upload_dir + os.sep + file
     mlp_pred = result_map[file]['mlp']['pred']
     mlp_prob = result_map[file]['mlp']['prob']
     shallow_prob = result_map[file]['shallow']['prob']

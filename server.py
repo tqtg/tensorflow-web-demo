@@ -59,13 +59,18 @@ class MyHandler(BaseHTTPRequestHandler):
     form = cgi.FieldStorage(fp=self.rfile,
                             headers=self.headers,
                             environ={'REQUEST_METHOD': 'POST'})
+
     image_content = form.value[0].value
 
     upload_dir = os.curdir + os.sep + 'uploads'
-    filename =  '{}_{}.jpg'.format(str(len(os.listdir(upload_dir)) + 1), hashlib.md5(image_content).hexdigest())
+    filename =  '{}.jpg'.format(hashlib.md5(image_content).hexdigest())
     file_path =  upload_dir + os.sep + filename
 
-    image = self._save_image(image_content, file_path)
+    try:
+      image = self._save_image(image_content, file_path)
+    except:
+      self.send_error(404, 'Unsupported File Format: %s' % form.value[0].filename)
+      return
 
     mlp_pred, mlp_prob = mlp.predict(image)
     shallow_pred, shallow_prob = shallow.predict(image)
@@ -83,7 +88,7 @@ class MyHandler(BaseHTTPRequestHandler):
       f.write(','.join(['deep', deep_pred, '{:.3f}'.format(deep_prob)]))
 
     self._set_headers('text/html')
-    self.wfile.write(result.render_single(file_path, mlp_pred, mlp_prob, shallow_pred, shallow_prob, deep_pred, deep_prob))
+    self.wfile.write(result.render_upload(file_path, mlp_pred, mlp_prob, shallow_pred, shallow_prob, deep_pred, deep_prob))
 
 
   def _save_image(self, image_content, image_path):
