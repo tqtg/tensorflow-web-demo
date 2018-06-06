@@ -51,7 +51,7 @@ head = """
         <!-- Begin page content -->
         <div class="container">
           <div class="page-header">
-            <h1><a href="/">Facial Emotion Recognition</a></h1>
+            <h1><a href="/face-emotion">Facial Emotion Recognition</a></h1>
             <p>
               This is a demo of Facial Emotion Recognition by <a href="https://preferred.ai/">Preferred.AI</a>
             </p>
@@ -86,7 +86,7 @@ def render_upload(image_path, mlp_pred, mlp_prob, shallow_pred, shallow_prob, de
 
           <hr>
       
-          <form id="formupload" class="form-inline" role="form" action="" method="post" enctype="multipart/form-data">
+          <form id="formupload" class="form-inline" role="form" action="/face-emotion/upload" method="post" enctype="multipart/form-data">
             <div class="form-group">
               <label for="imagefile">Upload an image:</label>
               <input type="file" name="imagefile" id="imagefile">
