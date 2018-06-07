@@ -19,7 +19,7 @@ class NN:
 
 class MLP(NN):
   """
-    Definition of MLP network with 2 fully-connected layers of 512 dimensions.
+    Definition of MLP network with 2 fully-connected layers of 128 dimensions.
   """
   def __init__(self, dropout_rate=0.0, num_classes=2):
     NN.__init__(self)
